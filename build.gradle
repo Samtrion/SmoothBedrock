@@ -32,7 +32,7 @@ compileJava {
 minecraft {
     version = forge_version
     runDir = "run" 	
-    mappings = "stable_22"
+    mappings = forge_mappings
 	
 	replace '@VERSION@', project.version
 }
