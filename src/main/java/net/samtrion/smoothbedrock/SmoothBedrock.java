@@ -7,13 +7,12 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
-import net.minecraft.world.chunk.IChunkGenerator;
 import net.minecraft.world.chunk.IChunkProvider;
-
+import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraftforge.fml.common.IWorldGenerator;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 @Mod(modid = SmoothBedrock.MOD_ID, name = SmoothBedrock.MOD_NAME, version = SmoothBedrock.MOD_VERSION, dependencies = SmoothBedrock.MOD_DEPENDENCIES)
@@ -21,10 +20,10 @@ public class SmoothBedrock implements IWorldGenerator {
 	public static final String MOD_ID = "smoothbedrock";
 	public static final String MOD_NAME = "SmoothBedrock";
 	public static final String MOD_VERSION = "@VERSION@";
-	public static final String MOD_DEPENDENCIES = "required-after:Forge@[13.20.1.2386,)";
+	public static final String MOD_DEPENDENCIES = "required-after:forge@[14.23.0.2491,)";
 
 	@EventHandler
-	public void init(FMLInitializationEvent e) {
+	public void preInit(FMLPreInitializationEvent e) {
 		GameRegistry.registerWorldGenerator(this, Integer.MAX_VALUE);
 	}
 	
@@ -39,20 +38,23 @@ public class SmoothBedrock implements IWorldGenerator {
 			return;
 		}
 		boolean isNether = dimensionId == -1;
+
+		int offsetX = chunkX * 16 + 8;
+		int offsetZ = chunkZ * 16 + 8;
 		Block replaceBlock = isNether ? Blocks.NETHERRACK : Blocks.STONE;
 
-		generateBedrock(world, chunkX, chunkZ, replaceBlock, 5, 4, 3, 2, 1);
+		generateBedrock(world, offsetX, offsetZ, replaceBlock, 5, 4, 3, 2, 1);
 		if (isNether) {
-			generateBedrock(world, chunkX, chunkZ, replaceBlock, 122, 123, 124, 125, 126);
+			generateBedrock(world, offsetX, offsetZ, replaceBlock, 122, 123, 124, 125, 126);
 		}
 
 	}
 
-	private void generateBedrock(World world, int chunkX, int chunkZ, Block replaceBlock, int... yies) {
+	private void generateBedrock(World world, int offsetX, int offsetZ, Block replaceBlock, int... yies) {
 		for (int x = 0; x < 16; x++) {
 			for (int z = 0; z < 16; z++) {
-				int posX = chunkX * 16 + x;
-				int posZ = chunkZ * 16 + z;
+				int posX = offsetX + x;
+				int posZ = offsetZ + z;
 				for (int posY : yies) {
 					BlockPos pos = new BlockPos(posX, posY, posZ);
 					if (isBedrock(world, pos)) {
