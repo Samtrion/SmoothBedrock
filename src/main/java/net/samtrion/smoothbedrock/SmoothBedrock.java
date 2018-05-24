@@ -21,7 +21,7 @@ public class SmoothBedrock implements IWorldGenerator {
 	public static final String MOD_ID = "smoothbedrock";
 	public static final String MOD_NAME = "SmoothBedrock";
 	public static final String MOD_VERSION = "@VERSION@";
-	public static final String MOD_DEPENDENCIES = "required-after:Forge@[12.17.0.1987,)";
+	public static final String MOD_DEPENDENCIES = "required-after:Forge@[12.18.3.2221,)";
 
 	@EventHandler
 	public void init(FMLInitializationEvent e) {
