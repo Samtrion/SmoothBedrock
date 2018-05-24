@@ -1,0 +1,94 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven { url = "http://files.minecraftforge.net/maven" }
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+        classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.0.10"
+    }
+}
+apply plugin: 'java'
+apply plugin: 'forge'
+apply plugin: "com.matthewprenger.cursegradle"
+
+def number = 'dev';
+if (hasProperty('buildNumber')) {
+	number = buildNumber;
+}
+
+version = "${minecraft_version}-${mod_version}.${number}"
+group = mod_namespace // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = mod_name
+
+println "Creating File Version '${version}' for '${archivesBaseName}'"
+	
+sourceCompatibility = targetCompatibility = "${java_version}"
+compileJava {
+    sourceCompatibility = targetCompatibility = "${java_version}"
+}
+
+minecraft {
+    version = forge_version
+    runDir = "run" 
+	
+	replace '@VERSION@', project.version
+}
+
+dependencies {
+}
+
+processResources {
+    // this will ensure that this task is redone when the versions change.
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+
+    // replace stuff in mcmod.info, nothing else
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+                
+        // replace version and mcversion
+        expand 'version':project.version, 'mcversion':project.minecraft.version
+    }
+        
+    // copy everything else except the mcmod.info
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+}
+
+task srcJar(type: Jar) {
+    from sourceSets.main.allSource
+	
+	extension = 'jar'
+	classifier = 'src'
+}
+
+task devJar(type: Jar, dependsOn: 'classes') {
+    from(sourceSets.main.output) {
+        include '**'
+    }
+
+    extension = 'jar'
+    classifier = 'dev'
+}
+
+artifacts {
+    archives srcJar, devJar
+}
+
+if (project.hasProperty('curseforgeApi')) {
+	curseforge {
+		apiKey = "${curseforgeApi}"
+		project {
+			id = "${curseforgeId}"
+			changelog = ''
+			releaseType = "${curseforgeReleaseType}"
+			addGameVersion "${minecraft_version}"
+			
+			addArtifact devJar
+			addArtifact srcJar			
+		}
+	}
+}
