@@ -3,6 +3,7 @@ package net.samtrion.smoothbedrock;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -42,15 +43,16 @@ public class SmoothBedrock implements IWorldGenerator {
 		int offsetX = chunkX * 16 + 8;
 		int offsetZ = chunkZ * 16 + 8;
 		Block replaceBlock = isNether ? Blocks.NETHERRACK : Blocks.STONE;
+		IBlockState state = replaceBlock.getDefaultState();
 
-		generateBedrock(world, offsetX, offsetZ, replaceBlock, 5, 4, 3, 2, 1);
+		generateBedrock(world, offsetX, offsetZ, state, 5, 4, 3, 2, 1);
 		if (isNether) {
-			generateBedrock(world, offsetX, offsetZ, replaceBlock, 122, 123, 124, 125, 126);
+			generateBedrock(world, offsetX, offsetZ, state, 122, 123, 124, 125, 126);
 		}
 
 	}
 
-	private void generateBedrock(World world, int offsetX, int offsetZ, Block replaceBlock, int... yies) {
+	private void generateBedrock(World world, int offsetX, int offsetZ, IBlockState state, int... yies) {
 		for (int x = 0; x < 16; x++) {
 			for (int z = 0; z < 16; z++) {
 				int posX = offsetX + x;
@@ -58,7 +60,7 @@ public class SmoothBedrock implements IWorldGenerator {
 				for (int posY : yies) {
 					BlockPos pos = new BlockPos(posX, posY, posZ);
 					if (isBedrock(world, pos)) {
-						world.setBlockState(pos, replaceBlock.getDefaultState(), 0);
+						world.setBlockState(pos, state, 0);
 					}
 				}
 			}
